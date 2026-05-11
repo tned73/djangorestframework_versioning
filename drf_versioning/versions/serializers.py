@@ -53,7 +53,9 @@ class ViewSetSerializer(serializers.Serializer):
 class ViewMethodSerializer(serializers.Serializer):
     endpoints_introduced = ViewSetSerializer(source="viewsets_introduced", many=True)
     endpoints_removed = ViewSetSerializer(source="viewsets_removed", many=True)
-    actions_introduced = ViewSetMethodSerializer(source="view_methods_introduced", many=True)
+    actions_introduced = ViewSetMethodSerializer(
+        source="view_methods_introduced", many=True
+    )
     actions_removed = ViewSetMethodSerializer(source="view_methods_removed", many=True)
 
 

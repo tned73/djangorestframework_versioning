@@ -9,7 +9,8 @@ from ..versions import Version
 
 class VersionedViewSetMeta(type):
     """Detect if the introduced_in / removed_in class attributes have been set on a
-    VersionedViewSet subclass, and register it with the Version instance if necessary."""
+    VersionedViewSet subclass, and register it with the Version instance if necessary.
+    """
 
     def __new__(cls, name, bases, dct):
         subclass = super().__new__(cls, name, bases, dct)
@@ -20,7 +21,9 @@ class VersionedViewSetMeta(type):
         # introduced_in and/or removed_in. This is a bit janky because a subclass named
         # VersionedViewSet could bypass this check, but 1) that's an unlikely edge case and 2) I
         # don't have a better solution right now.
-        if name != "VersionedViewSet" and not (introduced_in_version or removed_in_version):
+        if name != "VersionedViewSet" and not (
+            introduced_in_version or removed_in_version
+        ):
             raise VersionsNotDeclaredError(subclass.__name__)
 
         # if introduced_in and/or removed_in are declared, add the reverse relationship on the

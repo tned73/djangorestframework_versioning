@@ -1,6 +1,6 @@
 # Sample Django project setup
 
-To showcase the features of this library, we will set up a basic Django Rest Framework project. If you want to install DRF Versioning into an existing project, or if you just need a quick reference, feel free to skip this and use the Quick Start page instead. 
+To showcase the features of this library, we will set up a basic Django Rest Framework project. If you want to install DRF Versioning into an existing project, or if you just need a quick reference, feel free to skip this and use the Quick Start page instead.
 
 The [Django tutorial](https://docs.djangoproject.com/en/4.1/intro/tutorial01/) may also be helpful if you are doing this for the first time.
 

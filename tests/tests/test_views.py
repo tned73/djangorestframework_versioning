@@ -1,6 +1,6 @@
 import pytest
 from mixer.backend.django import mixer
-from rest_framework.test import APIRequestFactory, APIClient
+from rest_framework.test import APIClient, APIRequestFactory
 
 from drf_versioning.exceptions import VersionsNotDeclaredError
 from drf_versioning.versions import Version
@@ -23,7 +23,12 @@ def test_my_version():
 @pytest.mark.parametrize(
     "request_method, url, request_version, expected_status_code",
     [
-        ("get", "/thing/", "1.0.0", 404),  # viewset introduced but list action not yet introduced
+        (
+            "get",
+            "/thing/",
+            "1.0.0",
+            404,
+        ),  # viewset introduced but list action not yet introduced
         ("get", "/thing/", "2.0.0", 200),
         ("get", "/thing/", "2.1.0", 200),
         ("get", "/thing/", "2.2.0", 404),  # viewset removed in v2.2.0
@@ -56,7 +61,10 @@ def test_thing_viewset(request_method, url, request_version, expected_status_cod
     body = {"name": "foo", "number": 420}
     method = getattr(client, request_method)
     response = method(
-        url, HTTP_ACCEPT=f"application/json; version={request_version}", data=body, format="json"
+        url,
+        HTTP_ACCEPT=f"application/json; version={request_version}",
+        data=body,
+        format="json",
     )
     assert response.status_code == expected_status_code
 
@@ -64,7 +72,12 @@ def test_thing_viewset(request_method, url, request_version, expected_status_cod
 @pytest.mark.parametrize(
     "request_method, url, request_version, expected_status_code",
     [
-        ("get", "/thing2/", "1.0.0", 404),  # viewset introduced but list action not yet introduced
+        (
+            "get",
+            "/thing2/",
+            "1.0.0",
+            404,
+        ),  # viewset introduced but list action not yet introduced
         ("get", "/thing2/", "2.0.0", 200),
         ("get", "/thing2/", "2.1.0", 200),
         ("get", "/thing2/", "2.2.0", 200),
@@ -97,7 +110,10 @@ def test_thing2_viewset(request_method, url, request_version, expected_status_co
     body = {"name": "foo", "number": 420}
     method = getattr(client, request_method)
     response = method(
-        url, HTTP_ACCEPT=f"application/json; version={request_version}", data=body, format="json"
+        url,
+        HTTP_ACCEPT=f"application/json; version={request_version}",
+        data=body,
+        format="json",
     )
     assert response.status_code == expected_status_code
 
@@ -105,7 +121,12 @@ def test_thing2_viewset(request_method, url, request_version, expected_status_co
 @pytest.mark.parametrize(
     "request_method, url, request_version, expected_status_code",
     [
-        ("get", "/thing3/", "1.0.0", 404),  # viewset introduced but list action not yet introduced
+        (
+            "get",
+            "/thing3/",
+            "1.0.0",
+            404,
+        ),  # viewset introduced but list action not yet introduced
         ("get", "/thing3/", "2.0.0", 200),
         ("get", "/thing3/", "2.1.0", 200),
         ("get", "/thing3/", "2.2.0", 404),
@@ -138,7 +159,10 @@ def test_thing3_viewset(request_method, url, request_version, expected_status_co
     body = {"name": "foo", "number": 420}
     method = getattr(client, request_method)
     response = method(
-        url, HTTP_ACCEPT=f"application/json; version={request_version}", data=body, format="json"
+        url,
+        HTTP_ACCEPT=f"application/json; version={request_version}",
+        data=body,
+        format="json",
     )
     assert response.status_code == expected_status_code
 
@@ -154,16 +178,26 @@ def test_thing3_viewset(request_method, url, request_version, expected_status_co
         ("get", "/thing4/666/", "1.0.0", 404),  # retrieve method not introduced yet
         ("get", "/thing4/666/", "2.0.0", 200),
         ("get", "/thing4/666/", "2.1.0", 200),
-        ("get", "/thing4/666/", "2.2.0", 404),  # retrieve method removed in this version
+        (
+            "get",
+            "/thing4/666/",
+            "2.2.0",
+            404,
+        ),  # retrieve method removed in this version
     ],
 )
-def test_unversioned_thing_viewset(request_method, url, request_version, expected_status_code):
+def test_unversioned_thing_viewset(
+    request_method, url, request_version, expected_status_code
+):
     mixer.blend(Thing, id=666)
     client = APIClient()
     body = {"name": "foo", "number": 420}
     method = getattr(client, request_method)
     response = method(
-        url, HTTP_ACCEPT=f"application/json; version={request_version}", data=body, format="json"
+        url,
+        HTTP_ACCEPT=f"application/json; version={request_version}",
+        data=body,
+        format="json",
     )
     assert response.status_code == expected_status_code
 

@@ -47,5 +47,3 @@ push = false
 "drf_versioning/__init__.py" = [
     '__version__ = "{version}"',
 ]
-
-

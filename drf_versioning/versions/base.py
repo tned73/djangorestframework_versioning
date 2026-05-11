@@ -1,6 +1,7 @@
-from typing import Type, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Type, Union
 
-from packaging.version import Version as _Version, InvalidVersion
+from packaging.version import InvalidVersion
+from packaging.version import Version as _Version
 
 from ..exceptions import VersionDoesNotExist
 from ..settings import versioning_settings

@@ -10,7 +10,8 @@ from django.utils import timezone
 @pytest.fixture
 def patch_settings():
     """Thin wrapper around django's override_settings which allows us to override just some of
-    the elements of the settings, without having to provide all the unchanged elements."""
+    the elements of the settings, without having to provide all the unchanged elements.
+    """
     original_settings = settings.DRF_VERSIONING_SETTINGS
 
     @contextmanager

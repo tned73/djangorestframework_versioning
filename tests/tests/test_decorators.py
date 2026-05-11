@@ -4,7 +4,7 @@ import pytest
 from django.http import Http404
 
 from drf_versioning.decorators import versioned_view
-from drf_versioning.decorators.utils import get_min_version, get_max_version
+from drf_versioning.decorators.utils import get_max_version, get_min_version
 from drf_versioning.exceptions import VersionsNotDeclaredError
 from drf_versioning.versions import Version
 from tests import versions
@@ -26,22 +26,30 @@ def test_versioned_view_raises_error_if_no_args_passed():
         (dict(removed_in=versions.VERSION_2_0_0), versions.VERSION_2_0_0, 404),
         (dict(removed_in=versions.VERSION_2_0_0), versions.VERSION_2_1_0, 404),
         (
-            dict(introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0),
+            dict(
+                introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0
+            ),
             versions.VERSION_1_0_0,
             404,
         ),
         (
-            dict(introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0),
+            dict(
+                introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0
+            ),
             versions.VERSION_2_0_0,
             200,
         ),
         (
-            dict(introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0),
+            dict(
+                introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0
+            ),
             versions.VERSION_2_1_0,
             404,
         ),
         (
-            dict(introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0),
+            dict(
+                introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_1_0
+            ),
             versions.VERSION_2_2_0,
             404,
         ),
