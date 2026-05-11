@@ -1,8 +1,9 @@
+import glob
 import shutil
 import subprocess
 from pathlib import Path
+
 import drf_versioning
-import glob
 
 version = drf_versioning.__version__
 
@@ -20,7 +21,7 @@ def cleanup():
 def check(question: str):
     response = input(question + "\n")
     if response.lower() not in ["y", "yes"]:
-        raise Exception(f"Action required")
+        raise Exception("Action required")
 
 
 def shell(cmd: str):
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
     print("PyPI test run")
     shell("twine upload -r pypitest dist/*")
-    check(f"Does the testpypi output look OK?")
+    check("Does the testpypi output look OK?")
 
     print("PyPI deploy")
     shell("twine upload dist/*")
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     check("Does the list of docs versions look OK?")
 
     print("Deploying docs")
-    shell(f"mike set-default latest --push")
+    shell("mike set-default latest --push")
     cleanup()
 
     print("Done!")
