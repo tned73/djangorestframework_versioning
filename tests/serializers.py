@@ -1,11 +1,13 @@
 from rest_framework import serializers
-from tests import transforms
+
 from drf_versioning.serializers import VersionedSerializer
-from tests.models import Thing, Person
+from tests import transforms
+from tests.models import Person, Thing
 
 
 class ThingSerializer(VersionedSerializer, serializers.ModelSerializer):
     transforms = [
+        transforms.ThingRemoveFoo,
         transforms.ThingTransformAddNumber,
         transforms.ThingAddDateUpdated,
         transforms.ThingAddStatus,

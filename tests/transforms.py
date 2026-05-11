@@ -1,4 +1,6 @@
-from drf_versioning.transforms import AddField
+from rest_framework import serializers
+
+from drf_versioning.transforms import AddField, RemoveField
 from tests import versions
 
 
@@ -18,6 +20,13 @@ class ThingAddDateUpdated(AddField):
     field_name = "date_updated"
     description = "Added Thing.date_updated field"
     version = versions.VERSION_2_2_0
+
+
+class ThingRemoveFoo(RemoveField):
+    field_name = "foo"
+    serializer = serializers.IntegerField(allow_null=True)
+    version = versions.VERSION_2_0_0
+    description = "Removed Thing.foo field"
 
 
 class PersonAddBirthday(AddField):

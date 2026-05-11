@@ -1,3 +1,7 @@
+from typing import Any
+
+from rest_framework import serializers
+
 from .transform import Transform
 
 
@@ -6,21 +10,32 @@ class AddField(Transform):
 
     def to_internal_value(self, data: dict, request):
         data.pop(self.field_name, None)
-        return data
+        return {}
 
-    def to_representation(self, data: dict, request, instance):
+    def to_representation(self, data: dict, request, instance) -> None:
         data.pop(self.field_name, None)
-        return data
 
 
 class RemoveField(Transform):
     field_name: str
-    null_value = None  # the value to serialize for the removed field for old versions
+    serializer: serializers.Field
 
-    def to_internal_value(self, data: dict, request):
-        data.pop(self.field_name, None)
-        return data
+    def to_internal_value(self, data: dict, request) -> dict[str, Any]:
+        if self.field_name in data:
+            return {
+                self.field_name: (
+                    self.serializer.to_internal_value(data[self.field_name])
+                    if data[self.field_name] is not None
+                    or not self.serializer.allow_null
+                    else None
+                )
+            }
+        return {}
 
     def to_representation(self, data: dict, request, instance):
-        data[self.field_name] = self.null_value
-        return data
+        value = getattr(instance, self.field_name)
+        data[self.field_name] = (
+            self.serializer.to_representation(value)
+            if value is not None and self.serializer.allow_null
+            else value
+        )

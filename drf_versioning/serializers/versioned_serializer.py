@@ -1,9 +1,10 @@
 from django.http import QueryDict
 from rest_framework import serializers
 
+from drf_versioning.settings import versioning_settings
+
 from ..exceptions import TransformsNotDeclaredError
 from ..transforms import Transform
-from drf_versioning.settings import versioning_settings
 
 Version = versioning_settings.VERSION_MODEL
 
@@ -26,7 +27,9 @@ class VersionedSerializer(serializers.Serializer):
         if request and hasattr(request, "version"):
             return request.version
 
-    def transforms_for_version(self, version: Version, reverse=False) -> list[type[Transform]]:
+    def transforms_for_version(
+        self, version: Version, reverse=False
+    ) -> list[type[Transform]]:
         return sorted(
             filter(lambda transform: version < transform.version, self.transforms),
             key=lambda transform: transform.version,
@@ -42,16 +45,26 @@ class VersionedSerializer(serializers.Serializer):
         data = super().to_representation(instance)
         request = self.context.get("request")
         if request_version := self._get_request_version():
-            for transform in self.transforms_for_version(version=request_version, reverse=True):
+            for transform in self.transforms_for_version(
+                version=request_version, reverse=True
+            ):
                 transform().to_representation(data, request, instance)
 
         return data
 
     def to_internal_value(self, data: QueryDict):
         data = data.copy()  # immutable QueryDict to mutable dict
+        result = {}
         request = self.context.get("request")
         if request_version := self._get_request_version():
-            for transform in self.transforms_for_version(version=request_version, reverse=False):
-                transform().to_internal_value(data, request)
+            for transform in self.transforms_for_version(
+                version=request_version, reverse=False
+            ):
+                if _data := transform().to_internal_value(data, request):
+                    assert len(_data) == 1
+                    result.update(_data)
 
-        return super().to_internal_value(data)
+        internal_result = super().to_internal_value(data)
+        # add dropped fields back into result
+        internal_result.update(result)
+        return internal_result

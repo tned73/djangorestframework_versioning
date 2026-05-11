@@ -1,3 +1,5 @@
+from typing import Any
+
 from drf_versioning.settings import versioning_settings
 
 Version = versioning_settings.VERSION_MODEL
@@ -22,7 +24,7 @@ class Transform(metaclass=TransformMeta):
     description: str  # will be added to version.notes
     version: Version  # will be added to version.transforms
 
-    def to_internal_value(self, data: dict, request):
+    def to_internal_value(self, data: dict, request) -> dict[str, Any] | None:
         """Operation performed on incoming data from older request versions"""
         raise NotImplementedError
 

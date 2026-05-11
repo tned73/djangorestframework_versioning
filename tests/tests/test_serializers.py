@@ -3,16 +3,16 @@ from dataclasses import dataclass
 import pytest
 from dateutil.parser import parse
 from django.utils import timezone
-from redbreast.testing import parametrize, testparams, assert_dicts_equal
+from redbreast.testing import assert_dicts_equal, parametrize, testparams
 from rest_framework import serializers
 
 from drf_versioning.serializers import VersionedSerializer
 from drf_versioning.transforms import AddField
 from drf_versioning.versions import Version
 from drf_versioning.versions.serializers import VersionSerializer
-from tests import versions, views, transforms
-from tests.models import Thing, Person
-from tests.serializers import ThingSerializer, PersonSerializer
+from tests import transforms, versions, views
+from tests.models import Person, Thing
+from tests.serializers import PersonSerializer, ThingSerializer
 
 pytestmark = pytest.mark.django_db
 
@@ -60,7 +60,7 @@ class ParentSerializer(VersionedSerializer):
     [
         param(
             version=versions.VERSION_1_0_0,
-            expected_data=dict(id=1, name="bar"),
+            expected_data=dict(id=1, name="bar", foo=0),
         ),
         param(
             version=versions.VERSION_2_0_0,
@@ -73,7 +73,11 @@ class ParentSerializer(VersionedSerializer):
         param(
             version=versions.VERSION_2_2_0,
             expected_data=dict(
-                id=1, name="bar", number=420, status="OK", date_updated="2010-01-02T03:04:05Z"
+                id=1,
+                name="bar",
+                number=420,
+                status="OK",
+                date_updated="2010-01-02T03:04:05Z",
             ),
         ),
     ],
@@ -97,8 +101,8 @@ def test_thing_serializer_to_representation(param):
     [
         param(
             version=versions.VERSION_1_0_0,
-            post_data=dict(name="bar"),
-            expected_field_values=dict(name="bar"),
+            post_data=dict(name="bar", foo=0),
+            expected_field_values=dict(name="bar", foo=0),
         ),
         param(
             version=versions.VERSION_2_0_0,
@@ -117,9 +121,14 @@ def test_thing_serializer_to_representation(param):
         ),
         param(
             version=versions.VERSION_2_2_0,
-            post_data=dict(name="bar", number=420, status="OK", date_updated="2022-09-02T12:00:00"),
+            post_data=dict(
+                name="bar", number=420, status="OK", date_updated="2022-09-02T12:00:00"
+            ),
             expected_field_values=dict(
-                name="bar", number=420, status="OK", date_updated=parse("2022-09-02T12:00:00Z")
+                name="bar",
+                number=420,
+                status="OK",
+                date_updated=parse("2022-09-02T12:00:00Z"),
             ),
         ),
     ],
@@ -199,7 +208,10 @@ def test_inline_serialization(param):
     child = Child(name="Billy", age=12)
     parent = Parent(name="Jane", age=69, child=child)
     request = MockRequest(version=param.request_version)
-    assert ParentSerializer(parent, context={"request": request}).data == param.expected_data
+    assert (
+        ParentSerializer(parent, context={"request": request}).data
+        == param.expected_data
+    )
 
 
 @parametrize(
@@ -239,7 +251,9 @@ def test_inline_serialization(param):
         ),
     ],
 )
-def test_inline_serialization_when_parent_serializer_is_not_a_VersionedSerializer(param):
+def test_inline_serialization_when_parent_serializer_is_not_a_VersionedSerializer(
+    param,
+):
     class ParentSerializer(serializers.Serializer):
         name = serializers.CharField()
         age = serializers.IntegerField()
@@ -248,7 +262,10 @@ def test_inline_serialization_when_parent_serializer_is_not_a_VersionedSerialize
     child = Child(name="Billy", age=12)
     parent = Parent(name="Jane", age=69, child=child)
     request = MockRequest(version=param.request_version)
-    assert ParentSerializer(parent, context={"request": request}).data == param.expected_data
+    assert (
+        ParentSerializer(parent, context={"request": request}).data
+        == param.expected_data
+    )
 
 
 @parametrize(
@@ -317,7 +334,10 @@ def test_inline_serialization_with_many(param):
     parent = Parent(name="Jane", age=69, children=[jimmy, billy])
 
     request = MockRequest(version=param.request_version)
-    assert ParentSerializer(parent, context={"request": request}).data == param.expected_data
+    assert (
+        ParentSerializer(parent, context={"request": request}).data
+        == param.expected_data
+    )
 
 
 def test_inline_serialization_without_context_results_in_most_recent_data():
@@ -435,13 +455,25 @@ def test_inline_serialization_without_context_results_in_most_recent_data():
 def test_inline_serialization2(param):
     tommy = Person.objects.create(name="tommy", birthday="1920-01-01")
     grace = Person.objects.create(name="grace", birthday="1919-01-01")
-    david = Person.objects.create(name="david", birthday="1957-03-03", father=tommy, mother=grace)
-    arthur = Person.objects.create(name="arthur", birthday="1955-01-01", father=tommy, mother=grace)
-    polly = Person.objects.create(name="polly", birthday="1960-01-01", father=tommy, mother=grace)
+    david = Person.objects.create(
+        name="david", birthday="1957-03-03", father=tommy, mother=grace
+    )
+    arthur = Person.objects.create(
+        name="arthur", birthday="1955-01-01", father=tommy, mother=grace
+    )
+    polly = Person.objects.create(
+        name="polly", birthday="1960-01-01", father=tommy, mother=grace
+    )
     ada = Person.objects.create(name="ada", birthday="1960-05-23")
-    charles = Person.objects.create(name="charles", birthday="1989-08-25", father=david, mother=ada)
-    john = Person.objects.create(name="john", birthday="1991-10-22", father=david, mother=ada)
-    finn = Person.objects.create(name="finn", birthday="1994-06-24", father=david, mother=ada)
+    charles = Person.objects.create(
+        name="charles", birthday="1989-08-25", father=david, mother=ada
+    )
+    john = Person.objects.create(
+        name="john", birthday="1991-10-22", father=david, mother=ada
+    )
+    finn = Person.objects.create(
+        name="finn", birthday="1994-06-24", father=david, mother=ada
+    )
 
     person = Person.objects.get(name=param.name)
     request = MockRequest(version=param.request_version)

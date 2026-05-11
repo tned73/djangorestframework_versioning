@@ -1,7 +1,10 @@
 import pytest
+from django.utils import timezone
+from rest_framework import serializers
 
 from drf_versioning.transforms import AddField, RemoveField, Transform
 from drf_versioning.versions import Version
+from tests.models import Thing
 
 
 def test_transform_notimplemented():
@@ -12,7 +15,6 @@ def test_transform_notimplemented():
         trans.to_representation("data", "request", "instance")
 
 
-@pytest.mark.parametrize("transform_class", [AddField, RemoveField])
 @pytest.mark.parametrize(
     "incoming_data, expected_result",
     [
@@ -24,12 +26,11 @@ def test_transform_notimplemented():
         ),
     ],
 )
-def test_addfield_and_removefield_to_internal_value(
-    incoming_data, expected_result, transform_class
-):
-    trans = transform_class()
+def test_addfield_to_internal_value(incoming_data, expected_result):
+    trans = AddField()
     trans.field_name = "foo"
-    assert trans.to_internal_value(data=incoming_data, request="foo") == expected_result
+    trans.to_internal_value(data=incoming_data, request=...)
+    assert incoming_data == expected_result
 
 
 @pytest.mark.parametrize(
@@ -46,9 +47,11 @@ def test_addfield_and_removefield_to_internal_value(
 def test_addfield_to_representation(outgoing_data, expected_result):
     trans = AddField()
     trans.field_name = "foo"
-    assert trans.to_representation(data=outgoing_data, request=..., instance=...) == expected_result
+    trans.to_representation(data=outgoing_data, request=..., instance=...)
+    assert outgoing_data == expected_result
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "outgoing_data, expected_result",
     [
@@ -61,10 +64,55 @@ def test_addfield_to_representation(outgoing_data, expected_result):
     ],
 )
 def test_removefield_to_representation(outgoing_data, expected_result):
+    thing = Thing.objects.create(
+        id=1,
+        name="bar",
+        number=420,
+        date_updated=timezone.now(),
+    )
     trans = RemoveField()
     trans.field_name = "foo"
-    trans.null_value = 0
-    assert trans.to_representation(data=outgoing_data, request=..., instance=...) == expected_result
+    trans.serializer = serializers.IntegerField()
+    trans.to_representation(data=outgoing_data, request=..., instance=thing)
+    assert outgoing_data == expected_result
+
+
+@pytest.mark.parametrize(
+    "outgoing_data, expected_result",
+    [
+        ({"foo": 0, "other": "unchanged"}, {"foo": 0}),
+        ({"foo": 1}, {"foo": 1}),
+        (
+            {"other": "unchanged"},
+            {},
+        ),
+        pytest.param({"foo": None}, {"foo": None}, marks=pytest.mark.xfail),
+    ],
+)
+def test_removefield_to_internal_value(outgoing_data, expected_result):
+    trans = RemoveField()
+    trans.field_name = "foo"
+    trans.serializer = serializers.IntegerField()
+    assert trans.to_internal_value(data=outgoing_data, request=...) == expected_result
+
+
+@pytest.mark.parametrize(
+    "outgoing_data, expected_result",
+    [
+        ({"foo": 0, "other": "unchanged"}, {"foo": 0}),
+        ({"foo": 1}, {"foo": 1}),
+        (
+            {"other": "unchanged"},
+            {},
+        ),
+        ({"foo": None}, {"foo": None}),
+    ],
+)
+def test_removefield_to_internal_value_allow_null(outgoing_data, expected_result):
+    trans = RemoveField()
+    trans.field_name = "foo"
+    trans.serializer = serializers.IntegerField(allow_null=True)
+    assert trans.to_internal_value(data=outgoing_data, request=...) == expected_result
 
 
 def test_transform_meta():
