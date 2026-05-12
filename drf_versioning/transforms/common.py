@@ -19,9 +19,10 @@ class AddField(Transform):
 class RemoveField(Transform):
     field_name: str
     serializer: serializers.Field
+    default: Any
 
     def to_internal_value(self, data: dict, request) -> dict[str, Any]:
-        if self.field_name in data:
+        if self.field_name in data and hasattr(self, "serializer"):
             return {
                 self.field_name: (
                     self.serializer.to_internal_value(data[self.field_name])
@@ -33,6 +34,9 @@ class RemoveField(Transform):
         return {}
 
     def to_representation(self, data: dict, request, instance):
+        if hasattr(self, "default"):
+            data[self.field_name] = self.default
+            return
         value = getattr(instance, self.field_name)
         data[self.field_name] = (
             self.serializer.to_representation(value)
