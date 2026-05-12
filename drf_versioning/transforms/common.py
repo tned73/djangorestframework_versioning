@@ -38,8 +38,9 @@ class RemoveField(Transform):
             data[self.field_name] = self.default
             return
         value = getattr(instance, self.field_name)
-        data[self.field_name] = (
-            self.serializer.to_representation(value)
-            if value is not None and self.serializer.allow_null
-            else value
-        )
+        if value is None and self.serializer.allow_null:
+            representation = value
+        else:
+            representation = self.serializer.to_representation(value)
+
+        data[self.field_name] = representation

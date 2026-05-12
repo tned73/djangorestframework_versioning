@@ -14,14 +14,7 @@ class Thing(models.Model):
         max_length=20, choices=ThingStatus.choices, default=ThingStatus.OK
     )
     date_updated = models.DateTimeField(auto_created=True, default=timezone.now)
-
-    @property
-    def foo(self):
-        return 0
-
-    @foo.setter
-    def foo(self, value):
-        "Test passing"
+    foo = models.IntegerField(null=True)
 
 
 class Person(models.Model):
