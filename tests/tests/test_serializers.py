@@ -60,7 +60,7 @@ class ParentSerializer(VersionedSerializer):
     [
         param(
             version=versions.VERSION_1_0_0,
-            expected_data=dict(id=1, name="bar", foo=0),
+            expected_data=dict(id=1, name="bar", foo=None),
         ),
         param(
             version=versions.VERSION_2_0_0,

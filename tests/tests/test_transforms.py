@@ -55,11 +55,12 @@ def test_addfield_to_representation(outgoing_data, expected_result):
 @pytest.mark.parametrize(
     "outgoing_data, expected_result",
     [
-        ({}, {"foo": 0}),
-        ({"foo": "this should be ignored"}, {"foo": 0}),
+        ({}, {"foo": None}),
+        ({"foo": "this should be ignored"}, {"foo": None}),
+        ({"foo": None}, {"foo": None}),
         (
             {"other": "unchanged"},
-            {"foo": 0, "other": "unchanged"},
+            {"foo": None, "other": "unchanged"},
         ),
     ],
 )
@@ -72,7 +73,7 @@ def test_removefield_to_representation(outgoing_data, expected_result):
     )
     trans = RemoveField()
     trans.field_name = "foo"
-    trans.serializer = serializers.IntegerField()
+    trans.serializer = serializers.IntegerField(allow_null=True)
     trans.to_representation(data=outgoing_data, request=..., instance=thing)
     assert outgoing_data == expected_result
 
