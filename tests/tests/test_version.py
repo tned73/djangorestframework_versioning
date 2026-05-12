@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 from packaging.version import InvalidVersion
+from packaging.version import Version as PackagingVersion
 
 from drf_versioning.exceptions import VersionDoesNotExist
 from drf_versioning.settings import versioning_settings
 from drf_versioning.versions import Version
 from tests import versions
-from packaging.version import Version as PackagingVersion
 from tests.versions import Version as CustomVersionModel
 
 
@@ -108,8 +108,14 @@ def test_custom_version_model(patch_settings):
         ("", InvalidVersion()),
         ("1.0", Version("1.0")),
         (Version("1.0"), Version("1.0")),  # is subclass of packaging.Version
-        (PackagingVersion("1.0"), PackagingVersion("1.0")),  # is subclass of packaging.Version
-        (CustomVersionModel("1.0"), CustomVersionModel("1.0")),  # is subclass of packaging.Version
+        (
+            PackagingVersion("1.0"),
+            PackagingVersion("1.0"),
+        ),  # is subclass of packaging.Version
+        (
+            CustomVersionModel("1.0"),
+            CustomVersionModel("1.0"),
+        ),  # is subclass of packaging.Version
     ],
 )
 def test_parse(input, expected_result):

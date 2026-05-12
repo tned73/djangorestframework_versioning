@@ -6,7 +6,7 @@ This section is intended as a quick reference for those who want to install DRF 
 
 ```
 ./manage.py startapp versioning
-``` 
+```
 
 or
 

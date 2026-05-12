@@ -1,7 +1,8 @@
-from rest_framework import viewsets, mixins, decorators
+from rest_framework import decorators, mixins, viewsets
 from rest_framework.response import Response
 
 from drf_versioning.settings import versioning_settings
+
 from ..versions.serializers import VersionSerializer
 
 Version = versioning_settings.VERSION_MODEL

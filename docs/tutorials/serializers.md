@@ -362,7 +362,7 @@ class DogSerializer(VersionedSerializer, serializers.ModelSerializer):
             "id",
             "name",
             "birthday",
-            # "age",  # <---- remove this field 
+            # "age",  # <---- remove this field
         )
 ```
 
@@ -460,4 +460,3 @@ In Postman: `GET /doggies/1/` with version = 4.0.0:
   "birthday": "2014-05-06"
 }
 ```
-

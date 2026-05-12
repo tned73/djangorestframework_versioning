@@ -1,4 +1,4 @@
-from rest_framework import viewsets, decorators
+from rest_framework import decorators, viewsets
 from rest_framework.response import Response
 
 from drf_versioning.decorators import versioned_view
@@ -73,6 +73,8 @@ class UnversionedThingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ThingSerializer
     queryset = Thing.objects.all()
 
-    @versioned_view(introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_2_0)
+    @versioned_view(
+        introduced_in=versions.VERSION_2_0_0, removed_in=versions.VERSION_2_2_0
+    )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
