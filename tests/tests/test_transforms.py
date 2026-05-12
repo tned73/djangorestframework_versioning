@@ -77,6 +77,15 @@ def test_removefield_to_representation(outgoing_data, expected_result):
     assert outgoing_data == expected_result
 
 
+def test_removefield_to_representation_default():
+    trans = RemoveField()
+    trans.field_name = "foo"
+    trans.default = 123
+    outgoing_data = {}
+    trans.to_representation(data=outgoing_data, request=..., instance=...)
+    assert outgoing_data == {"foo": 123}
+
+
 @pytest.mark.parametrize(
     "outgoing_data, expected_result",
     [
